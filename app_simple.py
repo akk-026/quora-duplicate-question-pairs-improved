@@ -7,6 +7,9 @@ import plotly.express as px
 import warnings
 warnings.filterwarnings('ignore')
 
+# Set environment variable to avoid tokenizer warnings
+os.environ['TOKENIZERS_PARALLELISM'] = 'false'
+
 # Set page config
 st.set_page_config(
     page_title="Quora Duplicate Question Detector",
@@ -14,10 +17,39 @@ st.set_page_config(
     layout="wide"
 )
 
+def train_models_if_needed():
+    """Train models if they don't exist"""
+    model_dir = 'models'
+    if not os.path.exists(model_dir):
+        os.makedirs(model_dir)
+    
+    # Check if models exist
+    required_files = ['random_forest.pkl', 'xgboost.pkl', 'scaler.pkl', 'processor.pkl']
+    models_exist = all(os.path.exists(os.path.join(model_dir, f)) for f in required_files)
+    
+    if not models_exist:
+        st.info("🤖 Training models for the first time... This may take a few minutes.")
+        
+        try:
+            # Import training function
+            from fast_train import fast_train
+            models, processor = fast_train()
+            st.success("✅ Models trained successfully!")
+            return True
+        except Exception as e:
+            st.error(f"❌ Error training models: {str(e)}")
+            return False
+    
+    return True
+
 @st.cache_resource
 def load_models():
     """Load trained models and processor"""
     try:
+        # First, ensure models are trained
+        if not train_models_if_needed():
+            return None, None, None
+        
         models = {}
         model_dir = 'models'
         
