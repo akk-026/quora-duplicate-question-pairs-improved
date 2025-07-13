@@ -3,50 +3,101 @@
 ## Streamlit Cloud Deployment
 
 ### Prerequisites
-1. GitHub account
-2. Streamlit Cloud account (free at https://share.streamlit.io/)
+1. GitHub repository with your code
+2. Streamlit Cloud account
 
 ### Steps
-
-1. **Push to GitHub**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin <your-github-repo-url>
-   git push -u origin main
-   ```
-
-2. **Deploy on Streamlit Cloud**
-   - Go to https://share.streamlit.io/
-   - Sign in with GitHub
-   - Click "New app"
-   - Select your repository
-   - Set the main file path to: `app.py`
-   - Click "Deploy"
-
-### Important Notes
-
-- **Model Training**: The app will automatically train models on first run
-- **Memory Limit**: Models are optimized to stay under 100MB
-- **Dependencies**: All required packages are in `requirements.txt`
-- **Data**: The `train.csv` file is included in the repository
-
-### Environment Variables (Optional)
-
-You can set these in Streamlit Cloud if needed:
-- `STREAMLIT_SERVER_PORT`: 8501
-- `STREAMLIT_SERVER_ADDRESS`: 0.0.0.0
+1. **Push to GitHub**: Ensure all files are committed and pushed
+2. **Connect to Streamlit Cloud**: 
+   - Go to [share.streamlit.io](https://share.streamlit.io)
+   - Connect your GitHub repository
+3. **Configure App**:
+   - **Main file path**: `app.py` (or `app_simple.py` for simplified version)
+   - **Python version**: 3.9 or 3.10
+4. **Deploy**: Click "Deploy app"
 
 ### Troubleshooting
 
-1. **Models not loading**: The app will automatically train models on first run
-2. **Memory issues**: The quick training uses a smaller dataset
-3. **Dependency issues**: All packages are pinned to specific versions
+#### ModuleNotFoundError
+If you see `ModuleNotFoundError: No module named 'joblib'`:
 
-### Local vs Cloud
+1. **Check requirements.txt**: Ensure it exists and has all dependencies
+2. **Verify file structure**:
+   ```
+   your-repo/
+   ├── app.py
+   ├── data_processor.py
+   ├── requirements.txt
+   ├── models/
+   │   ├── random_forest.pkl
+   │   ├── xgboost.pkl
+   │   ├── scaler.pkl
+   │   └── processor.pkl
+   └── train.csv
+   ```
 
-- **Local**: Use `./run.sh` or `run.bat` for easy setup
-- **Cloud**: Automatic deployment from GitHub
-- **Port**: Local uses 8501, Cloud uses default Streamlit port 
+3. **Alternative**: Use `app_simple.py` which has better error handling
+
+#### Model Loading Issues
+If models fail to load:
+
+1. **Ensure models exist**: Run `python fast_train.py` locally first
+2. **Check file sizes**: Models should be in `models/` directory
+3. **Verify file permissions**: All files should be readable
+
+#### Memory Issues
+If app crashes due to memory:
+
+1. **Use smaller models**: The current setup uses `all-MiniLM-L6-v2` (384 dimensions)
+2. **Reduce batch size**: Process fewer samples at once
+3. **Use simplified app**: `app_simple.py` has reduced memory usage
+
+### Local Testing
+
+Before deploying, test locally:
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Train models
+python fast_train.py
+
+# Test app
+streamlit run app.py --server.port 8501
+```
+
+### File Structure for Deployment
+
+```
+quora-duplicate/
+├── app.py                 # Main Streamlit app
+├── app_simple.py          # Simplified version (backup)
+├── data_processor.py      # Data processing module
+├── fast_train.py          # Training script
+├── requirements.txt       # Dependencies
+├── .streamlit/
+│   └── config.toml       # Streamlit config
+├── models/                # Trained models
+│   ├── random_forest.pkl
+│   ├── xgboost.pkl
+│   ├── scaler.pkl
+│   └── processor.pkl
+└── train.csv             # Dataset
+```
+
+### Common Issues & Solutions
+
+| Issue | Solution |
+|-------|----------|
+| ModuleNotFoundError | Check requirements.txt exists and has correct dependencies |
+| Model loading fails | Ensure models/ directory exists with trained models |
+| Memory errors | Use app_simple.py or reduce model complexity |
+| Port conflicts | Change port in config.toml or use different port |
+
+### Performance Tips
+
+1. **Use caching**: The app uses `@st.cache_resource` for model loading
+2. **Optimize imports**: Only import what's needed
+3. **Reduce model size**: Current models are <100MB total
+4. **Use simplified UI**: `app_simple.py` has fewer features but better performance 
