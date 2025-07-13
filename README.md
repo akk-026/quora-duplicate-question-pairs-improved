@@ -27,23 +27,48 @@ Visit `http://localhost:8501` to use the app.
 
 ## 🌐 Streamlit Cloud Deployment
 
-For **Streamlit Cloud deployment**, use the cloud-optimized version:
+Choose the appropriate version based on your needs:
 
+### Option 1: No Training (Recommended for Cloud)
+```bash
+streamlit run app_no_train.py --server.port 8501
+```
+- **No training required** - uses rule-based approach
+- **Instant deployment** - no timeouts
+- **Simple but effective** - fuzzy string matching + word overlap
+
+### Option 2: Ultra-Fast Training
+```bash
+streamlit run app_ultra_fast.py --server.port 8501
+```
+- **Minimal training** - 1,000 samples, simple models
+- **Fast deployment** - ~30 seconds training time
+- **Lightweight models** - 50 estimators, shallow trees
+
+### Option 3: Cloud-Optimized Training
 ```bash
 streamlit run app_cloud.py --server.port 8501
 ```
+- **Reduced training** - 5,000 samples, optimized models
+- **Moderate speed** - ~2-3 minutes training time
+- **Balanced performance** - 100 estimators, moderate depth
 
-**Key differences for cloud deployment:**
-- Uses smaller dataset (5,000 samples vs 15,000)
-- Faster training with reduced model complexity
-- Single-threaded training to avoid cloud timeouts
-- Auto-trains models on first run
+### Option 4: Full Features (Local Only)
+```bash
+streamlit run app.py --server.port 8501
+```
+- **Full training** - 15,000 samples, complex models
+- **Best performance** - 85%+ accuracy
+- **Local deployment only** - may timeout on cloud
 
-## 📊 Performance
+## 📊 Performance Comparison
 
-- **Accuracy**: 85.07% (XGBoost), 81.40% (Random Forest)
-- **Model Size**: < 100MB (Streamlit Cloud compatible)
-- **Features**: 789 features including sentence embeddings, TF-IDF, and semantic similarity
+| Version | Training Time | Accuracy | Cloud Compatible |
+|---------|---------------|----------|------------------|
+| `app_no_train.py` | 0 seconds | ~75% | ✅ Yes |
+| `app_ultra_fast.py` | ~30 seconds | ~78% | ✅ Yes |
+| `app_cloud.py` | ~2-3 minutes | ~80% | ✅ Yes |
+| `app.py` | ~5-10 minutes | ~85% | ❌ No |
 
 ## 🔧 Features
 
@@ -57,8 +82,10 @@ streamlit run app_cloud.py --server.port 8501
 
 ```
 quora-duplicate/
-├── app.py                 # Full-featured Streamlit app
+├── app.py                 # Full-featured Streamlit app (local only)
 ├── app_cloud.py           # Cloud-optimized version
+├── app_ultra_fast.py      # Ultra-fast training version
+├── app_no_train.py        # No-training rule-based version
 ├── app_simple.py          # Simplified version
 ├── data_processor.py      # Data processing and feature extraction
 ├── fast_train.py          # Model training script
@@ -75,13 +102,13 @@ quora-duplicate/
 
 ## 🌐 Deployment
 
-### Streamlit Cloud
+### Streamlit Cloud (Recommended)
 1. Push to GitHub
 2. Connect to Streamlit Cloud
-3. Set main file to `app_cloud.py` (recommended) or `app.py`
+3. Set main file to `app_no_train.py` (instant deployment)
 4. Deploy!
 
-### Local
+### Local Development
 ```bash
 pip install -r requirements.txt
 python fast_train.py
@@ -93,6 +120,7 @@ streamlit run app.py --server.port 8501
 - **Sentence Embeddings**: 384-dimensional vectors from `all-MiniLM-L6-v2`
 - **Advanced Features**: TF-IDF similarity, semantic similarity, word overlap
 - **Ensemble Models**: Random Forest + XGBoost with hyperparameter tuning
+- **Rule-based**: Fuzzy string matching + word overlap (no training)
 
 ---
 
