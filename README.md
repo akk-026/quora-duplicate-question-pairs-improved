@@ -128,7 +128,7 @@ streamlit run app.py --server.port 8501
 
 The ultra-fast version of the Quora Duplicate Question Detector is deployed and available for live use at:
 
-🔗 Live App: quora-duplicate-question-pairs-improved
+🔗 https://quora-duplicate-question-pairs-improved-95y7srwwg8nmdpmzp4fmf7.streamlit.app/
 
 This deployment uses app_ultrafast.py, optimized for real-time predictions with minimal latency. The model is preloaded with efficient caching to ensure smooth user experience even with multiple requests.
 
