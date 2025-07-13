@@ -25,6 +25,20 @@ streamlit run app.py --server.port 8501
 
 Visit `http://localhost:8501` to use the app.
 
+## 🌐 Streamlit Cloud Deployment
+
+For **Streamlit Cloud deployment**, use the cloud-optimized version:
+
+```bash
+streamlit run app_cloud.py --server.port 8501
+```
+
+**Key differences for cloud deployment:**
+- Uses smaller dataset (5,000 samples vs 15,000)
+- Faster training with reduced model complexity
+- Single-threaded training to avoid cloud timeouts
+- Auto-trains models on first run
+
 ## 📊 Performance
 
 - **Accuracy**: 85.07% (XGBoost), 81.40% (Random Forest)
@@ -43,16 +57,20 @@ Visit `http://localhost:8501` to use the app.
 
 ```
 quora-duplicate/
-├── app.py                 # Streamlit frontend
+├── app.py                 # Full-featured Streamlit app
+├── app_cloud.py           # Cloud-optimized version
+├── app_simple.py          # Simplified version
 ├── data_processor.py      # Data processing and feature extraction
 ├── fast_train.py          # Model training script
 ├── requirements.txt       # Python dependencies
-├── train.csv             # Quora dataset
-└── models/               # Trained models
-    ├── random_forest.pkl
-    ├── xgboost.pkl
-    ├── scaler.pkl
-    └── processor.pkl
+├── .streamlit/
+│   └── config.toml       # Streamlit configuration
+├── models/                # Trained models
+│   ├── random_forest.pkl
+│   ├── xgboost.pkl
+│   ├── scaler.pkl
+│   └── processor.pkl
+└── train.csv             # Dataset
 ```
 
 ## 🌐 Deployment
@@ -60,7 +78,7 @@ quora-duplicate/
 ### Streamlit Cloud
 1. Push to GitHub
 2. Connect to Streamlit Cloud
-3. Set main file to `app.py`
+3. Set main file to `app_cloud.py` (recommended) or `app.py`
 4. Deploy!
 
 ### Local
